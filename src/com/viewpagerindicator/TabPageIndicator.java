@@ -17,16 +17,18 @@
 package com.viewpagerindicator;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -74,13 +76,17 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     private int mSelectedTabIndex;
 
     private OnTabReselectedListener mTabReselectedListener;
+    
+    private Context mContext;
 
     public TabPageIndicator(Context context) {
         this(context, null);
+        mContext = context;
     }
 
     public TabPageIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         setHorizontalScrollBarEnabled(false);
 
         mTabLayout = new IcsLinearLayout(context, R.attr.vpiTabPageIndicatorStyle);
@@ -157,9 +163,16 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         tabView.setFocusable(true);
         tabView.setOnClickListener(mTabClickListener);
         tabView.setText(text);
-
+        tabView.setGravity(Gravity.CENTER);   
+        tabView.setTextSize(13.33f);
+        
+        float density = mContext.getResources().getDisplayMetrics().density;
+        if(density < 2.0f) {
+        	tabView.setTextSize(10f);
+        }
+        
         if (iconResId != 0) {
-            tabView.setCompoundDrawablesWithIntrinsicBounds(iconResId, 0, 0, 0);
+            tabView.setCompoundDrawablesWithIntrinsicBounds(0, iconResId, 0, R.drawable.tab_line_selector);
         }
 
         mTabLayout.addView(tabView, new LinearLayout.LayoutParams(0, MATCH_PARENT, 1));
@@ -266,6 +279,8 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
         public TabView(Context context) {
             super(context, null, R.attr.vpiTabPageIndicatorStyle);
+            setTextColor(getResources().getColorStateList(R.color.vpi__tab_text_selector));
+            setBackgroundResource(R.drawable.custom_tab_indicator);
         }
 
         @Override
